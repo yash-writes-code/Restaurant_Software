@@ -6,12 +6,73 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-// model User {
-//   id    Int     @id @default(autoincrement())
-//   name  String
-//   email String  @unique
-// }
+
+
+model MenuItem {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  itemName      String         @unique
+  available      Boolean
+  category      Category       @relation(fields: [categoryId], references: [id])
+  categoryId    String         @db.ObjectId  // Ensure this uses @db.ObjectId
+  priceOptions  PriceOption[]  // Relation to price options
+  orderItems    OrderItem[] 
+}
+
+model PriceOption {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  size       String  // e.g., "half", "full", "small", "medium", "large"
+  price      Float
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String @db.ObjectId  // Ensure this uses @db.ObjectId
+}
+
+model Category {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  name      String     @unique
+  menuItems MenuItem[]
+}
+
+model Order {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  type        OrderType    // DineIn or Takeaway
+  customer    Customer?    @relation(fields: [customerId], references: [id])
+  customerId  String?      @db.ObjectId
+  orderItems  OrderItem[]  // Relation to order items
+  status      OrderStatus   // ongoing or complete
+  createdAt   DateTime     @default(now())  // Track when the order was created
+  updatedAt   DateTime     @updatedAt  // Track when the order was last updated
+}
+
+// Enum for Order Types
+enum OrderType {
+  DineIn
+  Takeaway
+}
+
+// Enum for Order Status
+enum OrderStatus {
+  Ongoing
+  Complete
+}
+
+model OrderItem {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String   @db.ObjectId
+  quantity   Int      // Quantity of the menu item ordered
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String   @db.ObjectId         // Relation to Order
+}
+
+
+model Customer {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   // Name of the customer
+  phone     String   @unique // Phone number must be unique
+  orders    Order[]  // Relation to the orders placed by the customer
+  
+}
