@@ -76,3 +76,19 @@ model Customer {
   orders    Order[]  // Relation to the orders placed by the customer
   
 }
+
+enum TableStatus{
+  available
+  unavailable
+  reserved
+}
+
+
+model Table{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  tno     Int @unique
+  capacity Int
+  available  Boolean
+  status TableStatus
+}
+

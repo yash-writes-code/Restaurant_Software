@@ -5,9 +5,10 @@ const config = {
   port: process.env.PORT || 3000,       // Application port
   environment: process.env.NODE_ENV || 'development',  // Environment (development, production)
 
-  // Database configuration
+  // // Database configuration
   database: {
-    url: process.env.DATABASE_URL,      // Prisma or general database connection URL
+    url: process.env.DATABASE_URL,
+          // Prisma or general database connection URL
   },
 
   // JWT and session settings
@@ -29,15 +30,15 @@ const config = {
   },
 
   // Logger settings
-  logger: {
-    level: process.env.LOG_LEVEL || 'info',    // Log level (e.g., info, debug, error)
-  },
+  // logger: {
+  //   level: process.env.LOG_LEVEL || 'info',    // Log level (e.g., info, debug, error)
+  // },
 
   // Third-party API keys or credentials
-  thirdPartyAPI: {
-    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY, // Google Maps API key
-    paymentGatewayKey: process.env.PAYMENT_GATEWAY_KEY, // Payment gateway API key
-  },
+  // thirdPartyAPI: {
+  //   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY, // Google Maps API key
+  //   paymentGatewayKey: process.env.PAYMENT_GATEWAY_KEY, // Payment gateway API key
+  // },
 };
 
 module.exports = config;

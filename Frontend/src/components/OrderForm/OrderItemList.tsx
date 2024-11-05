@@ -1,4 +1,6 @@
-import { useState } from 'react'
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
 import { Trash2 } from 'lucide-react'
 
 interface MenuItem {
@@ -28,6 +30,23 @@ interface OrderItemListProps {
 
 export function OrderItemList({ orderItems, setOrderItems, menuItems }: OrderItemListProps) {
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1)
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false)
+  const suggestionsRef = useRef<HTMLUListElement>(null)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleMenuItemChange = (index: number, menuItemId: string) => {
     const menuItem = menuItems.find(item => item.id === menuItemId)
@@ -42,6 +61,8 @@ export function OrderItemList({ orderItems, setOrderItems, menuItems }: OrderIte
         total: menuItem.priceOptions[0]?.price * updatedItems[index].quantity || 0
       }
       setOrderItems(updatedItems)
+      setSearchQuery('')
+      setShowSuggestions(false)
     }
   }
 
@@ -74,8 +95,25 @@ export function OrderItemList({ orderItems, setOrderItems, menuItems }: OrderIte
     setOrderItems(orderItems.filter((_, i) => i !== index))
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setSelectedIndex(prev => Math.min(prev + 1, filteredMenuItems.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setSelectedIndex(prev => Math.max(prev - 1, 0))
+    } else if (e.key === 'Enter' && selectedIndex !== -1) {
+      e.preventDefault()
+      handleMenuItemChange(index, filteredMenuItems[selectedIndex].id)
+    }
+  }
+
+  const filteredMenuItems = menuItems.filter(menuItem =>
+    menuItem.itemName.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   return (
-    <div className="overflow-x-auto">
+    <div className="">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
@@ -112,26 +150,35 @@ export function OrderItemList({ orderItems, setOrderItems, menuItems }: OrderIte
                       updatedItems[index].menuItemName = e.target.value
                       setOrderItems(updatedItems)
                       setSearchQuery(e.target.value)
+                      setShowSuggestions(true)
+                      setSelectedIndex(-1)
+                      setEditingIndex(index)
                     }}
+                    onFocus={() => {
+                      setShowSuggestions(true)
+                      setEditingIndex(index)
+                    }}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
                     className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     placeholder="Search menu item..."
                   />
-                  {searchQuery && (
-                    <ul className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                      {menuItems
-                        .filter(menuItem =>
-                          menuItem.itemName.toLowerCase().includes(searchQuery.toLowerCase())
-                        )
-                        .map(menuItem => (
-                          <li
-                            key={menuItem.id}
-                            onClick={() => handleMenuItemChange(index, menuItem.id)}
-                            className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 hover:text-white"
-                          >
-                            {menuItem.itemName}
-                          </li>
-                        ))}
-                    
+                  {showSuggestions && searchQuery && editingIndex === index && (
+                    <ul
+                      ref={suggestionsRef}
+                      className="absolute z-50 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
+                      style={{ top: '100%' }}
+                    >
+                      {filteredMenuItems.map((menuItem, menuItemIndex) => (
+                        <li
+                          key={menuItem.id}
+                          onClick={() => handleMenuItemChange(index, menuItem.id)}
+                          className={`cursor-pointer select-none relative py-2 pl-3 pr-9 ${
+                            menuItemIndex === selectedIndex ? 'bg-indigo-600 text-white' : 'hover:bg-indigo-100'
+                          }`}
+                        >
+                          {menuItem.itemName}
+                        </li>
+                      ))}
                     </ul>
                   )}
                 </div>

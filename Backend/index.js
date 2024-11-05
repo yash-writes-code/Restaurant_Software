@@ -1,16 +1,19 @@
+
+const config = require('./src/config/appconfig');
+
 const express = require('express');
 const cors = require('cors');
-const config = require('./config/appconfig');
 const { PrismaClient } = require('@prisma/client');
 
 const app = express();
 const port = config.port;
 const prisma = new PrismaClient();
 
-const menuroutes = require('./routes/menuroutes');
-const categoryroutes = require('./routes/categoryroutes');
-const customerroutes = require('./routes/customerroutes');
-const orderroutes = require('./routes/orderroutes');
+
+const menuroutes = require('./src/routes/menuroutes');
+const categoryroutes = require('./src/routes/categoryroutes');
+const customerroutes = require('./src/routes/customerroutes');
+const orderroutes = require('./src/routes/orderroutes');
 
 // Middlewares
 app.use(cors()); // Allows CORS for all origins by default
