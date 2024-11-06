@@ -1,10 +1,13 @@
-const prisma = require("../config/prisma");
+//import customer from "../config/prisma.js";
+import prisma from "../config/prisma.js";
+const {customer} = prisma;
+import { Request,Response } from "express";
 
 // GET all customers
-async function getCustomers(req, res) {
+export async function getCustomers(req: Request, res: Response) : Promise<void>{
   try {
     console.log("tryna find all customers");
-    const customers = await prisma.customer.findMany(); // Fetch customers
+    const customers = await customer.findMany(); // Fetch customers
     console.log("customers--------------> ", customers);
 
     res.status(200).json(customers); // Return customers as JSON
@@ -14,10 +17,10 @@ async function getCustomers(req, res) {
   }
 }
 
-async function createCustomer(req, res) {
+export async function createCustomer(req: Request, res: Response) :Promise<void> {
   try {
     const { name, phone } = req.body;
-    const newcustomer = await prisma.customer.create({
+    const newcustomer = await customer.create({
       data: {
         name: name,
         phone: phone,
@@ -29,8 +32,3 @@ async function createCustomer(req, res) {
     res.status(500).json("some eroor");
   }
 }
-
-module.exports = {
-  getCustomers,
-  createCustomer,
-};

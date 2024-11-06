@@ -1,5 +1,6 @@
 // /config/appConfig.js
-require('dotenv').config(); // Load environment variables from .env
+import dotenv from "dotenv"// Load environment variables from .env
+dotenv.config();
 
 const config = {
   port: process.env.PORT || 3000,       // Application port
@@ -41,4 +42,4 @@ const config = {
   // },
 };
 
-module.exports = config;
+export default config;

@@ -1,6 +1,17 @@
-const prisma = require("../config/prisma");
+import { MenuItem } from "@prisma/client";
+import prisma from "../config/prisma.js";
+import { Request,Response } from "express";
 
-async function createMenuItem(req, res) {
+
+
+interface priceOption{
+    id :    string;  
+    size       :string; 
+    price      :number;
+    menuItem  : MenuItem;
+    menuItemId :string;  
+}
+export async function createMenuItem(req: Request, res: Response) : Promise<void>{
   console.log("Received request to create a menu item");
   const { itemName, categoryId, available, priceOptions } = req.body;
   console.log(req.body);
@@ -12,7 +23,7 @@ async function createMenuItem(req, res) {
     !Array.isArray(priceOptions)
   ) {
     console.log("yha fas gya");
-    return res
+     res
       .status(400)
       .json({
         error: "Item name, category, and valid price options are required.",
@@ -27,7 +38,7 @@ async function createMenuItem(req, res) {
         available,
         categoryId, // Associate the menu item with the category by categoryId
         priceOptions: {
-          create: priceOptions.map((option) => ({
+          create: priceOptions.map((option:priceOption) => ({
             size: option.size,
             price: option.price,
           })),
@@ -48,12 +59,12 @@ async function createMenuItem(req, res) {
   }
 }
 
-async function deleteMenuItem(req, res) {
+export async function deleteMenuItem(req: Request, res: Response) : Promise<void> {
   const { id } = req.params;
 
   // Input validation
   if (!id) {
-    return res.status(400).json({ error: "Menu item ID is required." });
+     res.status(400).json({ error: "Menu item ID is required." });
   }
 
   try {
@@ -81,13 +92,13 @@ async function deleteMenuItem(req, res) {
   }
 }
 
-async function updateMenuItem(req, res) {
+export async function updateMenuItem(req: Request, res: Response) : Promise<void>{
   const { id } = req.params;
   const { itemName, available, categoryId, priceOptions } = req.body;
 
   // Input validation
   if (!id || !itemName || !categoryId || !Array.isArray(priceOptions)) {
-    return res
+     res
       .status(400)
       .json({
         error:
@@ -114,7 +125,7 @@ async function updateMenuItem(req, res) {
 
     // Then, create new price options
     const updatedPriceOptions = await prisma.priceOption.createMany({
-      data: priceOptions.map((option) => ({
+      data: priceOptions.map((option:priceOption) => ({
         size: option.size,
         price: option.price,
         menuItemId: id, // Associate with the updated menu item
@@ -135,13 +146,13 @@ async function updateMenuItem(req, res) {
   }
 }
 
-async function getMenuItem(req, res){
-    const { query } = req.query; // Get the search query from the frontend
+export async function getMenuItem(req: Request, res: Response) : Promise<void>{
+    const query = req.query.query as string|undefined; // Get the search query from the frontend
     try {
       const menuItems = await prisma.menuItem.findMany({
         where: {
           itemName: {
-            contains: query,
+            contains: query || "",
             mode: 'insensitive'
           },
         },
@@ -158,9 +169,3 @@ async function getMenuItem(req, res){
   };
 
   
-module.exports = {
-    getMenuItem,
-  createMenuItem,
-  updateMenuItem,
-  deleteMenuItem,
-};
