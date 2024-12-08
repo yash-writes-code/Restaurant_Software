@@ -1,6 +1,10 @@
 import { Hono } from "hono";
 
-const orderrouter = new Hono();
+const orderrouter = new Hono<{
+    Bindings: {
+      DATABASE_URL:string 
+    }
+  }>();
 
 import {createOrder,updateOrder,deleteOrder} from "../controllers/ordercontrollers.js"
 

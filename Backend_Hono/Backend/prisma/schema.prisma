@@ -1,46 +1,41 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-
-
 model MenuItem {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  id            String         @id @default(uuid()) @db.Uuid
   itemName      String         @unique
-  available      Boolean
+  available     Boolean
   category      Category       @relation(fields: [categoryId], references: [id])
-  categoryId    String         @db.ObjectId  // Ensure this uses @db.ObjectId
+  categoryId    String         @db.Uuid // Adjusted to UUID
   priceOptions  PriceOption[]  // Relation to price options
-  orderItems    OrderItem[] 
+  orderItems    OrderItem[]    // Relation to order items
 }
 
 model PriceOption {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  id         String  @id @default(uuid()) @db.Uuid
   size       String  // e.g., "half", "full", "small", "medium", "large"
   price      Float
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
-  menuItemId String @db.ObjectId  // Ensure this uses @db.ObjectId
+  menuItemId String @db.Uuid // Adjusted to UUID
 }
 
 model Category {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  id        String     @id @default(uuid()) @db.Uuid
   name      String     @unique
   menuItems MenuItem[]
 }
 
 model Order {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  id          String       @id @default(uuid()) @db.Uuid
   type        OrderType    // DineIn or Takeaway
   customer    Customer?    @relation(fields: [customerId], references: [id])
-  customerId  String?      @db.ObjectId
+  customerId  String?      @db.Uuid // Adjusted to UUID
   orderItems  OrderItem[]  // Relation to order items
   status      OrderStatus   // ongoing or complete
   createdAt   DateTime     @default(now())  // Track when the order was created
@@ -60,35 +55,31 @@ enum OrderStatus {
 }
 
 model OrderItem {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String   @id @default(uuid()) @db.Uuid
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
-  menuItemId String   @db.ObjectId
+  menuItemId String   @db.Uuid
   quantity   Int      // Quantity of the menu item ordered
   order      Order    @relation(fields: [orderId], references: [id])
-  orderId    String   @db.ObjectId         // Relation to Order
+  orderId    String   @db.Uuid         // Relation to Order
 }
 
-
 model Customer {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(uuid()) @db.Uuid
   name      String   // Name of the customer
   phone     String   @unique // Phone number must be unique
   orders    Order[]  // Relation to the orders placed by the customer
-  
 }
 
-enum TableStatus{
+enum TableStatus {
   available
   unavailable
   reserved
 }
 
-
-model Table{
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  tno     Int @unique
-  capacity Int
-  available  Boolean
-  status TableStatus
+model Table {
+  id        String     @id @default(uuid()) @db.Uuid
+  tno       Int        @unique
+  capacity  Int
+  available Boolean
+  status    TableStatus
 }
-

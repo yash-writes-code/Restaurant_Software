@@ -1,7 +1,11 @@
 import { Hono } from 'hono';
 import { getMenuItem, createMenuItem, deleteMenuItem, updateMenuItem } from '../controllers/menucontrollers.js';
 
-const menurouter = new Hono();
+const menurouter = new Hono<{
+    Bindings: {
+      DATABASE_URL:string 
+    }
+  }>();
 
 // Route for creating a new menu item
 menurouter.get('/',getMenuItem);

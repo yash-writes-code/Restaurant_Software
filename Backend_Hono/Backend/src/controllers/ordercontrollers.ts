@@ -1,5 +1,5 @@
 import { Context } from "hono";
-import { Customer } from "@prisma/client";
+import { Customer } from "@prisma/client/edge";
 import prisma from "../../config/prisma";
 
 const { customer: _customer, order, orderItem } = prisma;

@@ -1,7 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import { Context } from 'hono';
+import prisma from '../../config/prisma';
 
-const prisma = new PrismaClient();
+
+// const prisma = new PrismaClient().$extends(withAccelerate());
 
 // Get all categories
 export async function getCategories(c: Context): Promise<Response> {

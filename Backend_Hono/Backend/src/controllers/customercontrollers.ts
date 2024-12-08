@@ -1,5 +1,4 @@
 import prisma from '../../config/prisma';
-//import prisma from '../../config/prisma.js';
 import { Context } from 'hono';
 
 const { customer } = prisma;

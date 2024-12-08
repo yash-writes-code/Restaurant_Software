@@ -1,11 +1,13 @@
 name = "backend"
 main = "src/index.ts"
-compatibility_date = "2024-11-14"
-node_compat = true
+compatibility_date = "2024-11-06"
+compatibility_flags = [ "nodejs_compat" ]
 
-# compatibility_flags = [ "nodejs_compat" ]
+[vars]
+DATABASE_URL ="prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZDYxNWMwYzEtMzZlMi00ODIxLThhZjQtZjE4ZjU5MzFhNGU0IiwidGVuYW50X2lkIjoiMDcxYmNiYzg0N2ExOWNmY2Y1ODNiYzg1NzRjY2FhMzc5ODhhN2NiYTgzZTRhNjI0NmM2MTY3YjBhZmM3MmRiMiIsImludGVybmFsX3NlY3JldCI6ImMzYTNhMzhjLTBkMDQtNGJkZC1hNTM5LWQ5NmQ5MDdjZmU1YSJ9.DQnGEHxn2bK7oYsV2ApNPrXZD73mOcteOkgHYZfoUAo"
+PORT = "3000"
+CORS_ORIGIN = "*"
 
-# [vars]
 # MY_VAR = "my-variable"
 
 # [[kv_namespaces]]
