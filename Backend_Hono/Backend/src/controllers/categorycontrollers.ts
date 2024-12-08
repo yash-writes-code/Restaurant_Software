@@ -26,6 +26,8 @@ export async function createCategory(c: Context): Promise<Response> {
 
   try {
     // Create a new category
+    console.log(name);
+    
     const newCategory = await prisma.category.create({
       data: {
         name,
